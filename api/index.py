@@ -78,11 +78,15 @@ def index():
     # Convert the modified SVG content to a string
     modified_svg_content = ET.tostring(svg_tree).decode('utf-8')
 
-    # Return the modified SVG content with the appropriate content type
+    # Return the modified SVG content with the appropriate content type and cache control headers
     response = make_response(modified_svg_content)
     response.headers['Content-Type'] = 'image/svg+xml'
-    
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+
     return response
+    
 @app.route("/blog/")
 def posts():
     # Retrieve the posts
