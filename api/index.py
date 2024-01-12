@@ -65,7 +65,7 @@ def generate_svg(svg_file_name):
     text_param = request.args.get('text', '')
 
     # Read the content of the SVG file
-    svg_file_path = f'path/to/your/svgs/{svg_file_name}.svg'  # Replace with the actual path
+    svg_file_path = f'static/images/{svg_file_name}.svg'  # Replace with the actual path
     with open(svg_file_path, 'r') as file:
         svg_content = file.read()
 
