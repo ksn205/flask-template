@@ -59,14 +59,20 @@ def home():
 def about():
   return render_template("about.html")
 
+from flask import Flask, send_file, request
+from xml.etree import ElementTree as ET
+from io import BytesIO
+
+app = Flask(__name__)
+
 @app.route('/static/images/<svg_file_name>.svg')
 def generate_svg(svg_file_name):
     try:
         # Get the text parameter from the query string
         text_param = request.args.get('text', '')
 
-        # Construct the path to the SVG file in the static directory
-        svg_file_path = f'static/images/{svg_file_name}.svg'
+        # Construct the path to the specific SVG file in the static directory
+        svg_file_path = f'static/images/{svg_file_name}.svg'  # Replace with the actual path
 
         # Read the content of the SVG file
         with open(svg_file_path, 'r') as file:
@@ -80,6 +86,10 @@ def generate_svg(svg_file_name):
 
         # Return the modified SVG as a response with the appropriate content type
         return send_file(svg_io, mimetype='image/svg+xml')
+
+    except FileNotFoundError:
+        # Handle the case where the SVG file is not found
+        return "SVG file not found", 404
 
     except Exception as e:
         # Print the exception for debugging purposes
