@@ -1,7 +1,8 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, send_file
 from flask_flatpages import FlatPages
 from flask_frozen import Freezer
 from datetime import datetime
+from io import BytesIO
 import configparser
 import os
 import re
@@ -56,6 +57,28 @@ def home():
 @app.route('/about')
 def about():
   return render_template("about.html")
+
+@app.route('/static/images/<svg_file_name>.svg')
+def generate_svg(svg_file_name):
+    # Get the text parameter from the query string
+    text_param = request.args.get('text', '')
+
+    # Read the content of the SVG file
+    svg_file_path = f'path/to/your/svgs/{svg_file_name}.svg'  # Replace with the actual path
+    with open(svg_file_path, 'r') as file:
+        svg_content = file.read()
+
+    # Replace the placeholder {test} with the actual text parameter
+    svg_content = svg_content.replace('{test}', text_param)
+
+    # Create an in-memory file-like object to send the modified SVG content
+    svg_io = BytesIO(svg_content.encode('utf-8'))
+
+    # Return the modified SVG as a response with the appropriate content type
+    return send_file(svg_io, mimetype='image/svg+xml')
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 @app.route("/blog/")
 def posts():
