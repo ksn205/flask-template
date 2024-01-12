@@ -57,14 +57,15 @@ def home():
 def about():
   return render_template("about.html")
 
-@app.route('/static/images/<svg_file_name>.svg')
-def generate_svg(svg_file_name):
+# New route for handling dynamic SVGs
+@app.route('/static/images/svg/<svg_file_name>.svg')
+def generate_dynamic_svg(svg_file_name):
     try:
         # Get the text parameter from the query string
         text_param = request.args.get('text', '')
 
         # Construct the path to the specific SVG file in the static directory
-        svg_file_path = f'static/images/{svg_file_name}.svg'  # Replace with the actual path
+        svg_file_path = f'static/images/svg/{svg_file_name}.svg'
 
         # Read the content of the SVG file
         with open(svg_file_path, 'r') as file:
@@ -77,7 +78,7 @@ def generate_svg(svg_file_name):
         svg_io = BytesIO(svg_content.encode('utf-8'))
 
         # Return the modified SVG as a response with the appropriate content type
-        return send_file(svg_io, mimetype='image/svg+xml')
+        return svg_io.getvalue(), 200, {'Content-Type': 'image/svg+xml'}
 
     except FileNotFoundError:
         # Handle the case where the SVG file is not found
@@ -88,9 +89,6 @@ def generate_svg(svg_file_name):
         print(f"Exception: {e}")
         # Raise the exception again to see the full traceback in the Flask error page
         raise e
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 @app.route("/blog/")
 def posts():
@@ -171,3 +169,5 @@ def get_latest_posts(limit=10):
     filtered_posts = [post for post in posts if getattr(post, "meta").get('published') == True]
     latest = sorted(filtered_posts, reverse=True, key=lambda p: getattr(p, "meta").get('date'))
     return latest[:limit]
+if __name__ == '__main__':
+    app.run(debug=True)
