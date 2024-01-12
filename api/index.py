@@ -1,9 +1,7 @@
-from flask import Flask, render_template, url_for, request, send_file
-from xml.etree import ElementTree as ET
+from flask import Flask, render_template, url_for, request
 from flask_flatpages import FlatPages
 from flask_frozen import Freezer
 from datetime import datetime
-from io import BytesIO
 import configparser
 import os
 import re
@@ -138,4 +136,3 @@ def get_latest_posts(limit=10):
     filtered_posts = [post for post in posts if getattr(post, "meta").get('published') == True]
     latest = sorted(filtered_posts, reverse=True, key=lambda p: getattr(p, "meta").get('date'))
     return latest[:limit]
-
