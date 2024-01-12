@@ -57,39 +57,31 @@ def home():
 def about():
   return render_template("about.html")
 
-# New route for handling dynamic SVGs
-@app.route('/static/images/svg/<svg_file_name>.svg')
-def generate_dynamic_svg(svg_file_name):
-    try:
-        # Get the text parameter from the query string
-        text_param = request.args.get('text', '')
+@app.route('/')
+def index():
+    # Get the text parameter from the URL
+    text = request.args.get('text', 'Hello, SVG!')
 
-        # Construct the path to the specific SVG file in the static directory
-        svg_file_path = f'static/images/svg/{svg_file_name}.svg'
+    # Fetch the SVG file from the URL
+    svg_url = 'https://eblindside.onrender.com/static/images/testsvg1.svg'
+    response = requests.get(svg_url)
+    response.raise_for_status()
 
-        # Read the content of the SVG file
-        with open(svg_file_path, 'r') as file:
-            svg_content = file.read()
+    # Parse the SVG content
+    svg_tree = ET.fromstring(response.text)
 
-        # Replace the placeholder {test} with the actual text parameter
-        svg_content = svg_content.replace('{test}', text_param)
+    # Find and update the text element in the SVG
+    text_element = svg_tree.find(".//{http://www.w3.org/2000/svg}text")
+    text_element.text = text
 
-        # Create an in-memory file-like object to send the modified SVG content
-        svg_io = BytesIO(svg_content.encode('utf-8'))
+    # Convert the modified SVG content to a string
+    modified_svg_content = ET.tostring(svg_tree).decode('utf-8')
 
-        # Return the modified SVG as a response with the appropriate content type
-        return svg_io.getvalue(), 200, {'Content-Type': 'image/svg+xml'}
-
-    except FileNotFoundError:
-        # Handle the case where the SVG file is not found
-        return "SVG file not found", 404
-
-    except Exception as e:
-        # Print the exception for debugging purposes
-        print(f"Exception: {e}")
-        # Raise the exception again to see the full traceback in the Flask error page
-        raise e
-
+    # Return the modified SVG content with the appropriate content type
+    response = make_response(modified_svg_content)
+    response.headers['Content-Type'] = 'image/svg+xml'
+    
+    return response
 @app.route("/blog/")
 def posts():
     # Retrieve the posts
