@@ -1,0 +1,53 @@
+{% extends "base.html" %} {% block title%}Projects{% endblock%} {% block
+content%}
+<h1 class="text-secondary" align="">Projects</h1>
+<p class="">Check out my projects below!</p>
+
+<p class="">
+  Each one represents a unique challenge that I tackled with creativity and
+  passion. I hope they inspire you and spark your imagination.
+</p>
+
+<br />
+
+<div class="row">
+  {% for project in projects %}
+  <div class="col-sm-6 mb-3">
+    <div class="card bg-secondary">
+      <div class="card-body">
+        <div
+          class="card-title d-flex justify-content-between bg-secondary align-items-center">
+          <h5 class="">{{ project.title }}</h5>
+          <span class="badge badge-pill bg-dark">{{ project.date }}</span>
+        </div>
+        <p class="card-text">{{ project.shortDesc }}</p>
+        <p class="text-warning"><em class="">{{ project.tech }}</em></p>
+        <a
+          href="{{ project.codeLink }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary"
+          >Code</a
+        >
+        <a
+          href="{{ project.webLink }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary mx-2"
+          >Web</a
+        >
+        {% if project.localLink %}
+        <a
+          href="{{ project.localLink }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary"
+          >Local</a
+        >
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
