@@ -61,22 +61,31 @@ def about():
 
 @app.route('/static/images/<svg_file_name>.svg')
 def generate_svg(svg_file_name):
-    # Get the text parameter from the query string
-    text_param = request.args.get('text', '')
+    try:
+        # Get the text parameter from the query string
+        text_param = request.args.get('text', '')
 
-    # Read the content of the SVG file
-    svg_file_path = f'static/images/{svg_file_name}.svg'  # Replace with the actual path
-    with open(svg_file_path, 'r') as file:
-        svg_content = file.read()
+        # Construct the path to the SVG file in the static directory
+        svg_file_path = f'static/images/{svg_file_name}.svg'
 
-    # Replace the placeholder {test} with the actual text parameter
-    svg_content = svg_content.replace('{test}', text_param)
+        # Read the content of the SVG file
+        with open(svg_file_path, 'r') as file:
+            svg_content = file.read()
 
-    # Create an in-memory file-like object to send the modified SVG content
-    svg_io = BytesIO(svg_content.encode('utf-8'))
+        # Replace the placeholder {test} with the actual text parameter
+        svg_content = svg_content.replace('{test}', text_param)
 
-    # Return the modified SVG as a response with the appropriate content type
-    return send_file(svg_io, mimetype='image/svg+xml')
+        # Create an in-memory file-like object to send the modified SVG content
+        svg_io = BytesIO(svg_content.encode('utf-8'))
+
+        # Return the modified SVG as a response with the appropriate content type
+        return send_file(svg_io, mimetype='image/svg+xml')
+
+    except Exception as e:
+        # Print the exception for debugging purposes
+        print(f"Exception: {e}")
+        # Raise the exception again to see the full traceback in the Flask error page
+        raise e
 
 if __name__ == '__main__':
     app.run(debug=True)
